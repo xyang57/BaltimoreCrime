@@ -141,7 +141,7 @@ test_homicide <- weather_crime_daily %>% filter(Date >=ymd(20181001),Type == 'HO
 test_rape <- weather_crime_daily %>% filter(Date >=ymd(20181001),Type == 'RAPE')
 
 
-glm_model <- glm(as.factor(Crime) ~ Neighborhood + Day + Month + Weekday + temp + humidity + wind_speed + thunderstorm + sky_is_clear,
+glm_model <- glm(as.factor(Crime) ~ Neighborhood + Day + Month + Weekday + temp + humidity + wind_speed,
                  data = train_property, family = binomial)
 lda_model <- lda(as.factor(Crime) ~ cluster + Day + Month + Weekday + temp + humidity + wind_speed,
                  data = train_property)

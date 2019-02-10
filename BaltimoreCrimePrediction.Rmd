@@ -1,0 +1,113 @@
+---
+title: "Baltimore Crime Prediction"
+author: "Xu Yang"
+date: "2/1/2019"
+output:
+  html_document:
+    fig_height: 4
+    fig_width: 8
+    theme: cosmo
+    highlight: tango
+    number_sections: true
+    fig_caption: true
+    toc: true
+---
+
+# Introduction
+Crimes are a common social problem affecting the quality of life and the economic growth of a city. Crime rate is an important factor that affects people’s housing and traveling choices, for example: should I move to this new city or move away? What places should I avoid when I travel to a new place? 
+
+Baltimore is one of the few cities in the United States that is famous for its high crime rates, ranking 7th among the 10 most dangerous cities in 2017 according to Forbes. It is certainly a place that needs more caution for new-coming people. But before they settle down in the city, what kind of information could be useful to them in deciding where they should avoid going, at what time. Thus I propose to use the crime database to predict crime occurrences in Baltimore. The results could not only help the decision-making process of common citizens, but could also be potentially utilized by the local police department to more efficiently allocate their limited resources.
+
+Although crimes could occur everywhere, it is common that criminals stick to their routines: they would generally commit a crime at similar times in their familiar locations. Given this common pattern, I will be able to use a data mining approach to predict the “hotspots” (locations and times) for different types of crimes in the near future. I also want to test whether crime occurrences are linked with environmental effects such as temperature, humidity, and precipitation events. If so, my predictions could be more accurate with the help of real-time weather data.
+
+# Datasets
+I collected the data from various online databases, including: 1) Baltimore crime occurrence reports including crime time, crime data, crime type, neighborhood, district etc. 2012 to recent from the website of Baltimore Police Department (https://www.baltimorepolice.org/crime-stats/open-data); 2) historical weather data scraped from **API** on OpenWeatherMap (https://www.wunderground.com/), including hourly temperature, humidity, precipitation, pressure, and weather events; and 3) future weather data got from the same API to predict crime chance.
+
+# Load libraries and data {.tabset .tabset-fade}
+## Load libraries
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(tidyverse) 
+library(lubridate)
+library(caret)
+library(ranger)
+library(forcats)
+library(stringr)
+```
+## Load data
+```{r, message = F, warning = F, results = 'hide'}
+crime <- read_csv('~/Google Drive/GithubProject/Shiny_Application/BPD_Part_1_Victim_Based_Crime_Data.csv') %>% 
+  distinct() # get distinct rows of data with no duplicates
+weather <- read_csv('~/Google Drive/GithubProject/Shiny_Application/Weather.csv') 
+```
+
+# General info {.tabset .tabset-fade}
+## Weather Data
+```{r echo = F}
+cat("Dimensions:", dim(weather))
+glimpse(weather)
+```
+
+## Crime Data
+```{r echo = F}
+cat('Dimensions:',dim(crime))
+glimpse(crime)
+```
+
+# Data preprocessing {.tabset .tabset-fade}
+## Crime Data
+### Combine crime types
+There are `r length(unique(crime$Description))` types of crime: `r unique(crime$Description)`.
+
+I combine all the crime into 6 different big categories based on [wikipedia](www.wiki.com)
+```{r}
+# define look up table for crime types, combine crime type into 6 big categories
+lut <- c("COMMON ASSAULT" = "ASSAULT",
+         "LARCENY FROM AUTO" = "PROPERTY",
+         "AGG. ASSAULT" = "ASSAULT",
+         "ROBBERY - STREET" = "ROBBERY",
+         "LARCENY" = "PROPERTY",
+         "ASSAULT BY THREAT" = "ASSAULT",
+         "ROBBERY - CARJACKING" = "ROBBERY",
+         "AUTO THEFT" = "PROPERTY",
+         "SHOOTING" = "SHOOTING",
+         "HOMICIDE" = "HOMICIDE",
+         "BURGLARY" = "PROPERTY",
+         "ROBBERY - COMMERCIAL" = "ROBBERY",
+         "ROBBERY - RESIDENCE" = "ROBBERY",
+         "RAPE" = "RAPE",
+         "ARSON" = "PROPERTY"
+)
+crime$Type <- lut[crime$Description]
+```
+
+### collapse crime count to daily count
+```{r}
+crime <- crime %>% 
+  group_by(CrimeDate,  Neighborhood, Type) %>% 
+  summarize(count = n()) %>% 
+  ungroup()
+```
+
+### calculate Month, Year, Day of Month, Day of Week 
+```{r}
+crime_daily <- crime %>% 
+  mutate(CrimeDate = mdy(CrimeDate), Month = month(CrimeDate), Year = year(CrimeDate),
+         Day = day(CrimeDate),  
+         Weekday = weekdays(CrimeDate, abbreviate=T), Week = week(CrimeDate)) %>% 
+  mutate(Weekday = factor(Weekday, levels = c("Mon","Tue","Wed","Thu","Fri","Sat","Sun")))
+```
+
+## Weather Data
+### spread categorical value of weather_description to numeric value
+I select temp, temp_min, temp_max, pressure, humidity, wind_speed, clouds_all, and weather_description from the weather dataset, perform time conversion (the timezone of weather dataset and crime dataset is not the same), and then spread weather_description to numerical value in a wide format
+```{r}
+weather <- weather %>% 
+  select(dt_iso,temp,temp_min,temp_max,pressure,humidity,wind_speed,clouds_all, weather_description) %>% 
+  mutate(count = 1, weather_description = str_replace_all(weather_description,' ','_')) %>% 
+  mutate(DateTime = ymd_hms(dt_iso,tz = "America/New_York"), Date = date(DateTime)) %>% 
+  distinct(dt_iso,.keep_all = T) %>% 
+  spread(weather_description, count, fill = 0) %>% 
+  select(-dt_iso)
+```
+
+### collapse 
