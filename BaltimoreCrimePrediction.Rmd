@@ -1,7 +1,6 @@
 ---
 title: "Baltimore Crime Prediction"
 author: "Xu Yang"
-date: "2/1/2019"
 output:
   html_document:
     fig_height: 4
@@ -21,7 +20,7 @@ Baltimore is one of the few cities in the United States that is famous for its h
 Although crimes could occur everywhere, it is common that criminals stick to their routines: they would generally commit a crime at similar times in their familiar locations. Given this common pattern, I will be able to use a data mining approach to predict the “hotspots” (locations and times) for different types of crimes in the near future. I also want to test whether crime occurrences are linked with environmental effects such as temperature, humidity, and precipitation events. If so, my predictions could be more accurate with the help of real-time weather data.
 
 # Datasets
-I collected the data from various online databases, including: 1) Baltimore crime occurrence reports including crime time, crime data, crime type, neighborhood, district etc. 2012 to recent from the website of Baltimore Police Department (https://www.baltimorepolice.org/crime-stats/open-data); 2) historical weather data scraped from **API** on OpenWeatherMap (https://www.wunderground.com/), including hourly temperature, humidity, precipitation, pressure, and weather events; and 3) future weather data got from the same API to predict crime chance.
+I collected the data from various online databases, including: 1) Baltimore crime occurrence reports including crime time, crime data, crime type, neighborhood, district etc. 2012 to recent from the website of [Baltimore Police Department](https://www.baltimorepolice.org/crime-stats/open-data); 2) historical weather data scraped from **API** on [OpenWeatherMap](https://openweathermap.org/), including hourly temperature, humidity, precipitation, pressure, and weather events; and 3) future weather data got from the same API to predict crime chance.
 
 # Load libraries and data {.tabset .tabset-fade}
 ## Load libraries
@@ -58,7 +57,7 @@ glimpse(crime)
 ### Combine crime types
 There are `r length(unique(crime$Description))` types of crime: `r unique(crime$Description)`.
 
-I combine all the crime into 6 different big categories based on [wikipedia](www.wiki.com)
+I combine all the crime into 6 different big categories based on [wikipedia](https://en.wikipedia.org/wiki/Crime)
 ```{r}
 # define look up table for crime types, combine crime type into 6 big categories
 lut <- c("COMMON ASSAULT" = "ASSAULT",
@@ -80,27 +79,28 @@ lut <- c("COMMON ASSAULT" = "ASSAULT",
 crime$Type <- lut[crime$Description]
 ```
 
-### collapse crime count to daily count
-```{r}
+### Collapse crime count to daily count
+```{r message=FALSE, warning=FALSE}
 crime <- crime %>% 
   group_by(CrimeDate,  Neighborhood, Type) %>% 
   summarize(count = n()) %>% 
   ungroup()
 ```
 
-### calculate Month, Year, Day of Month, Day of Week 
-```{r}
+### Calculate Month, Year, Day of Month, Day of Week 
+```{r message=FALSE, warning=FALSE}
 crime_daily <- crime %>% 
   mutate(CrimeDate = mdy(CrimeDate), Month = month(CrimeDate), Year = year(CrimeDate),
          Day = day(CrimeDate),  
          Weekday = weekdays(CrimeDate, abbreviate=T), Week = week(CrimeDate)) %>% 
   mutate(Weekday = factor(Weekday, levels = c("Mon","Tue","Wed","Thu","Fri","Sat","Sun")))
+names(crime_daily)[1]='Date'
 ```
 
 ## Weather Data
 ### spread categorical value of weather_description to numeric value
 I select temp, temp_min, temp_max, pressure, humidity, wind_speed, clouds_all, and weather_description from the weather dataset, perform time conversion (the timezone of weather dataset and crime dataset is not the same), and then spread weather_description to numerical value in a wide format
-```{r}
+```{r message = F}
 weather <- weather %>% 
   select(dt_iso,temp,temp_min,temp_max,pressure,humidity,wind_speed,clouds_all, weather_description) %>% 
   mutate(count = 1, weather_description = str_replace_all(weather_description,' ','_')) %>% 
@@ -110,4 +110,303 @@ weather <- weather %>%
   select(-dt_iso)
 ```
 
-### collapse 
+### collapse hourly weather data to daily data
+```{r}
+weather_daily <- weather %>% 
+  group_by(Date) %>% 
+  summarize(temp = mean(temp, na.rm = T), temp_min = min(temp_min,na.rm = T), temp_max = max(temp_max),
+            pressure = mean(pressure, na.rm = T), humidity = mean(humidity, na.rm = T), wind_speed = max(wind_speed, na.rm  = T),
+            clouds_all = mean(clouds_all,na.rm=T),broken_clouds=sum(broken_clouds),drizzle = sum(drizzle),
+            few_clouds = sum(few_clouds), fog=sum(fog), freezing_rain = sum(freezing_rain),haze=sum(haze),
+            heavy_intensity_drizzle = sum(heavy_intensity_drizzle),heavy_intensity_rain=sum(heavy_intensity_rain),
+            heavy_intensity_shower_rain=sum(heavy_intensity_shower_rain),heavy_snow=sum(heavy_snow),
+            light_intensity_drizzle=sum(light_intensity_drizzle),light_intensity_shower_rain=sum(light_intensity_shower_rain),
+            light_rain=sum(light_rain),light_rain_and_snow=sum(light_rain_and_snow),light_shower_snow=sum(light_shower_snow),
+            light_snow=sum(light_snow),mist=sum(mist),moderate_rain=sum(moderate_rain),overcast_clouds=sum(overcast_clouds),
+            proximity_shower_rain=sum(proximity_shower_rain),proximity_thunderstorm=sum(proximity_thunderstorm),
+            proximity_thunderstorm_with_rain=sum(proximity_thunderstorm_with_rain),scattered_clouds=sum(scattered_clouds),
+            shower_rain=sum(shower_rain),shower_snow=sum(shower_snow),sky_is_clear=sum(sky_is_clear+Sky_is_Clear),
+            smoke=sum(smoke),snow=sum(snow),SQUALLS=sum(SQUALLS),thunderstorm=sum(thunderstorm),
+            thunderstorm_with_heavy_rain=sum(thunderstorm_with_heavy_rain),thunderstorm_with_light_drizzle=sum(thunderstorm_with_light_drizzle),
+            thunderstorm_with_light_rain=sum(thunderstorm_with_light_rain),thunderstorm_with_rain=sum(thunderstorm_with_rain),
+            very_heavy_rain=sum(very_heavy_rain))
+```
+
+## Join crime data with weather data
+```{r message = F}
+weather_crime_daily <- crime_daily %>% 
+  left_join(weather_daily) %>% 
+  filter(!is.na(temp))
+```
+# Explanatory Data Analysis (EDA)
+## crime count versus month
+```{r}
+crime_daily %>% 
+  group_by(Month, Type) %>% 
+  summarize(count = sum(count)) %>% 
+  ggplot(aes(x = Month, y = count, col = Type)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(.~Type, scales = 'free_y')
+```
+
+We can see there's a general trend that crime count drops in February and increases during summer. This may be related to temperature change. But different crimes exhibit different patterns. We can definitely include month of year as a variable to predict crime
+
+## crime count versus day of month
+```{r}
+crime_daily %>% 
+  group_by(Year,Month,Day, Type) %>% 
+  summarize(count = sum(count)) %>% 
+  ungroup() %>% 
+  group_by(Day, Type) %>% 
+  summarize(count = mean(count)) %>% 
+  ggplot(aes(x = Day, y = count, color = Type)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(.~Type, scales = 'free_y')
+```
+
+For assault and property, there's a dramatic increase of crime count on the first day of the month. It's very different for different crime types.
+
+## crime count versus day of the week
+```{r}
+crime_daily %>% 
+  group_by(Weekday,Type) %>% 
+  summarize(count = sum(count)) %>% 
+  ggplot(aes(x = Weekday, y = count, col = Type)) +
+  geom_point() +
+  geom_line(aes(group = Type)) +
+  facet_wrap(.~Type, scales = 'free_y') +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+Homicide, robbery, and rape show a similar decreasing pattern during the week, while assault peaks at weekend and property peaks at Friday and drops at weekend. Shooting first drops until Thursday and then increases again.
+
+## Crime count versus temperature
+```{r}
+crime_daily %>% 
+  group_by(Date) %>% 
+  summarize(count = sum(count)) %>% 
+  inner_join(weather_daily) %>% 
+  ggplot(aes(x = temp-273.15, y = count)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = 'lm') +
+  xlab('Air temperature (ºC)')
+```
+
+There exists a linear positive relationship between crime count and air temperature, which is to be expected.
+
+## Crime count by neighborhood
+Because there are a total of `r length(unique(crime_daily$Neighborhood))` neighborhoods, I'll only display the top 10 
+```{r}
+crime_daily %>% 
+  group_by(Neighborhood) %>% 
+  summarize(total_count = sum(count)) %>% 
+  arrange(desc(total_count)) %>% 
+  filter(total_count > 3967) %>% 
+  ggplot(aes(x = fct_reorder(Neighborhood, total_count), y = total_count)) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab('Neighborhood')
+```
+
+Not suprisingly downtown area is the most dangerous area.
+
+# More data preprocessing
+
+## Cluster Neighborhoods
+Because there are a total of 279 neighborhoods in Baltimore, if we include all the neighborhoods in our model, the model would take forever to fit. Furthermore, the cluster could tell some info about neighborhoods similarity in Baltimore.
+
+```{r}
+crime_by_neighborhood <- crime %>% 
+  group_by(Neighborhood,Type) %>% 
+  summarize(count = n()) %>% 
+  drop_na() %>% 
+  spread(Type,count,fill = 0) # format the table to wide format for clustering
+scaled = scale(crime_by_neighborhood[,2:7]) # scale the data before performing clustering
+wss = 0 # initialize within cluster sum of squared. We choose cluster number based on this.
+for (i in 1:20) {
+  km.out = kmeans(scaled, centers = i, nstart = 20, iter.max = 50)
+  wss[i] = km.out$tot.withinss
+}
+plot(wss)
+```
+
+To me, 10 clusters should be enough.
+
+Do it again with 10 clusters in mind
+```{r}
+km.out = kmeans(scaled, centers = 10, nstart = 20, iter.max = 50)
+crime_by_neighborhood$cluster = km.out$cluster
+neighborhood_cluster <- crime_by_neighborhood %>% 
+  select(Neighborhood,cluster) 
+neighborhood_cluster$cluster = factor(neighborhood_cluster$cluster)
+```
+
+## Prepare the dataset
+Right now, the crime dataset only contains the neighborhood and date when crime happens. But most of the time, there's no crime happening for a certain neighborhood. We need to prepare the crime dataset to set count to 0 when no certain crime happens
+
+```{r message=FALSE, warning=FALSE}
+Neighborhood = unique(crime_daily$Neighborhood[!is.na(crime_daily$Neighborhood)])
+Type = unique(crime_daily$Type)
+Date = seq(ymd('2012-01-01'),ymd('2019-01-12'), by = '1 day')
+prepare <- expand.grid(Date = Date,Neighborhood = Neighborhood,Type = Type) %>% 
+  mutate(Month = month(Date), Year = year(Date),
+         Day = day(Date),  
+         Weekday = weekdays(Date, abbreviate=T), Week = week(Date)) %>% 
+  mutate(Weekday = factor(Weekday, levels = c("Mon","Tue","Wed","Thu","Fri","Sat","Sun")))
+crime_daily <- prepare %>% 
+  left_join(crime_daily)
+crime_daily$count[is.na(crime_daily$count)] = 0
+table(crime_daily$count)
+proportion = crime_daily %>% 
+  group_by(Type) %>% 
+  summarize(prop = sum(count != 0)/n())
+proportion
+```
+
+Because the proporation the crime happens is around 20% even for property crime, which has the highest occurances, I will turn this into a **classification** task
+
+## change crime to No or Yes based on count
+```{r}
+crime_daily$Crime = if_else(crime_daily$count == 0, 'No', 'Yes')
+```
+
+## Join weather dataset and cluster info to crime dataset
+```{r message=FALSE, warning=FALSE}
+weather_crime_daily <- crime_daily %>% 
+  left_join(weather_daily) %>% 
+  filter(!is.na(temp)) %>% 
+  left_join(neighborhood_cluster) %>% 
+  mutate(Month = factor(Month), Day = factor(Day))
+
+```
+
+# Buliding models
+
+Because this is an **imbalanced dataset** with more 0s than 1s, I'll use **AUC** (area under the curve) as the metric to determine which model to use. AUC considers every possible threshold value for classification, and can give you a general idea that how your model performs. Other metrics to consider are precision, recall, and F index. Here we will focus only on AUC. I built different models for different types of crime, and for demonstration, I only included property crime, which is the most common crime here.
+
+## Identify near zero variance variables
+```{r}
+zero = nearZeroVar(weather_crime_daily[,18:52])
+zeroIndex = zero + 17
+weather_crime_daily = weather_crime_daily[,-zeroIndex]
+```
+## Relevel crime factor so that Yes is treated as positive
+```{r}
+weather_crime_daily$Crime = factor(weather_crime_daily$Crime, levels = c('Yes','No'))
+```
+
+## Split to training set and test set
+For quick training and demonstration purpose, I only used 1 year of data to train the model, and most recent 3 months as test set.
+```{r}
+train_property <- weather_crime_daily %>% filter(Date <ymd(20181001),Date >= ymd(20171001),Type == 'PROPERTY')
+test_property <- weather_crime_daily %>% filter(Date >= ymd(20181001),Type == 'PROPERTY')
+set.seed(32)
+myFolds <- createFolds(train_property$Crime, k = 3) # Three folds cross validation
+myControl = trainControl(summaryFunction = twoClassSummary, classProbs = T,verboseIter = T,
+                          savePredictions = T,
+                          index = myFolds, trim = T, returnData = F
+                         )
+```
+
+## Different models {.tabset .tabset-fade}
+### Logistic regression with regularization
+```{r eval = F}
+model_glmnet <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(alpha = c(0,0.1,1), lambda = c(0,0.5,1)),
+                      method = 'glmnet',metric = 'ROC', data = train_property)
+```
+
+```{r include = F}
+load('~/Google Drive/GithubProject/Shiny_Application/model_glmnet.rda')
+load('~/Google Drive/GithubProject/Shiny_Application/model_lda.rda')
+load('~/Google Drive/GithubProject/Shiny_Application/model_qda.rda')
+load('~/Google Drive/GithubProject/Shiny_Application/model_ranger.rda')
+load('~/Google Drive/GithubProject/Shiny_Application/model_gbm.rda')
+```
+
+Let's plot the results
+```{r}
+plot(model_glmnet)
+print(model_glmnet)
+```
+
+Lambda = 0, alpha = 1 gives us the highest ROC. This means we don't need regularization, the model didn't overfit the data.
+
+### Linear discriminant analysis
+```{r eval = F}
+model_lda <- train(formula_train, trControl = myControl, 
+                      method = 'lda',metric = 'ROC', data = train_property)
+```
+
+Let's look at the results
+```{r}
+print(model_lda)
+```
+### Quadratic discriminant analysis
+```{r eval = F}
+model_qda <- train(formula_train, trControl = myControl, 
+                      method = 'qda',metric = 'ROC', data = train_property)
+```
+
+
+
+Let's look at the results
+```{r}
+print(model_qda)
+```
+
+### Random forest
+```{r eval = F}
+model_ranger <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(mtry = c(2,4,10), splitrule = 'gini', min.node.size = 1),
+                      method = 'ranger',metric = 'ROC', data = train_property)
+```
+
+Let's plot the results
+```{r}
+plot(model_ranger)
+print(model_ranger)
+```
+
+### Gradient boosting
+```{r eval = F}
+model_gbm <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(shrinkage = c(0.01,0.1,0.2), interaction.depth = c(1,2,4), n.minobsinnode = 10, n.trees = 1000),
+                      method = 'gbm',metric = 'ROC', data = train_property)
+```
+
+Let's plot the results
+```{r}
+plot(model_gbm)
+print(model_gbm)
+```
+
+
+## Compare all the models
+```{r}
+model_all = list(glmnet = model_glmnet, lda = model_lda, qda = model_qda, ranger = model_ranger,
+                 gbm = model_gbm)
+results = resamples(model_all)
+summary(results)
+dotplot(results)
+
+```
+
+
+# Conclusion
+Logistic regression has the highest AUC, while random forest trained using 'ranger' package has the lowest AUC. This means the relationship between the log(odds) and our predictor variables are linearly related rather than have very complex interactions. However, if we choose different metric such as sensitivity, qda would give us the highest accuracy. However, the specificity, which is the true negative rate, is also the lowest using qda. This means we classify more false positives. It all depends on what your **goal** is and you have to **comporise** between sensitivity and specificity. 
+
+Besides property crime, I also built separate models for other five types of crime. Building models is not the end of my project. For better **visualization**, I deployed a shiny web application where people can check future four days of every type of crime probability at every neighborhood in Baltimore based on real-time weather forecast. [Please check it out](https://xuyangjhu.shinyapps.io/BaltimoreCrime/)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

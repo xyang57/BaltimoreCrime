@@ -70,11 +70,11 @@ ui <- fluidPage(
       br(),
       br(),
       br(),
-      p('The output crime chance is calculated based on date and weather forcast of future days with a logistic regression model I built using 
+      p('The output crime chance is calculated based on date and weather forcast of future days with a logistic regression model built by Xu Yang using 
         historical crime combined with weather data.'),
       
       p('For a detailed process of how the model is built, please visit my',a("Github.", 
-                                                                       href = "https://github.com/xyang57/Baltimore-Crime"))),
+                                                                       href = "https://github.com/xyang57/BaltimoreCrime"))),
     mainPanel ( 
       leafletOutput("mymap",height = 750)
     )
