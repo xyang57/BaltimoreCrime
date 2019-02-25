@@ -1,3 +1,4 @@
+########################### Load Libraries and Set Working Directory ##################################
 library(shiny)
 library(shinyWidgets)
 library(tidyverse)
@@ -11,10 +12,11 @@ library(caret)
 library(glmnet)
 setwd('~/Google Drive/GithubProject/Shiny_Baltimore_Crime/')
 
-############################## Get Weather Data Using OpenWeatherMap API #########################
+################# Get Real-time Forecast Weather Data Using OpenWeatherMap API #########################
 url = 'api.openweathermap.org/data/2.5/forecast?id=4347778&APPID=381091a1732cfe53efc11a419db2e93d'
 Res = GET(url)
 data = fromJSON(rawToChar(Res$content))
+
 # convert time zone form UTC to EST
 Date = as_datetime(data$list$dt-5*60*60)
 temp_hump = data$list$main %>% 

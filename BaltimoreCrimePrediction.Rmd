@@ -320,7 +320,7 @@ formula_train = as.formula('as.factor(Crime)~ Month + Day + Weekday + temp + tem
 ```{r include = F}
 #load('~/Google Drive/GithubProject/Shiny_Application/model_glmnet.rda')
 #load('~/Google Drive/GithubProject/Shiny_Application/model_lda.rda')
-load('~/Google Drive/GithubProject/Shiny_Application/model_qda.rda')
+#load('~/Google Drive/GithubProject/Shiny_Application/model_qda.rda')
 load('~/Google Drive/GithubProject/Shiny_Application/model_ranger.rda')
 load('~/Google Drive/GithubProject/Shiny_Application/model_gbm.rda')
 ```
@@ -349,7 +349,7 @@ Let's look at the results
 print(model_lda)
 ```
 ### Quadratic discriminant analysis
-```{r eval = F}
+```{r}
 model_qda <- train(formula_train, trControl = myControl, 
                       method = 'qda',metric = 'ROC', data = train_property)
 ```
@@ -376,7 +376,7 @@ print(model_ranger)
 
 ### Gradient boosting
 ```{r eval = F}
-model_gbm <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(shrinkage = c(0.01,0.1,0.2), interaction.depth = c(1,2,4), n.minobsinnode = 10, n.trees = 1000),
+model_gbm <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(shrinkage = c(0.1), interaction.depth = c(1,2,4), n.minobsinnode = 10, n.trees = 1000),
                       method = 'gbm',metric = 'ROC', data = train_property)
 ```
 
