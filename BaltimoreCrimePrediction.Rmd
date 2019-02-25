@@ -31,6 +31,7 @@ library(caret)
 library(ranger)
 library(forcats)
 library(stringr)
+library(pROC)
 ```
 ## Load data
 ```{r, message = F, warning = F, results = 'hide'}
@@ -308,22 +309,26 @@ myControl = trainControl(summaryFunction = twoClassSummary, classProbs = T,verbo
                           savePredictions = T,
                           index = myFolds, trim = T, returnData = F
                          )
+formula_train = as.formula('as.factor(Crime)~ Month + Day + Weekday + temp + temp_min + temp_max + pressure + 
+                   humidity + wind_speed + clouds_all + broken_clouds + few_clouds + fog + haze +
+                           heavy_intensity_rain + light_intensity_drizzle + light_rain + mist + moderate_rain+
+                           overcast_clouds +  scattered_clouds + sky_is_clear + cluster')
 ```
 
 ## Different models {.tabset .tabset-fade}
 ### Logistic regression with regularization
-```{r eval = F}
-model_glmnet <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(alpha = c(0,0.1,1), lambda = c(0,0.5,1)),
-                      method = 'glmnet',metric = 'ROC', data = train_property)
-```
-
 ```{r include = F}
-load('~/Google Drive/GithubProject/Shiny_Application/model_glmnet.rda')
-load('~/Google Drive/GithubProject/Shiny_Application/model_lda.rda')
+#load('~/Google Drive/GithubProject/Shiny_Application/model_glmnet.rda')
+#load('~/Google Drive/GithubProject/Shiny_Application/model_lda.rda')
 load('~/Google Drive/GithubProject/Shiny_Application/model_qda.rda')
 load('~/Google Drive/GithubProject/Shiny_Application/model_ranger.rda')
 load('~/Google Drive/GithubProject/Shiny_Application/model_gbm.rda')
 ```
+```{r}
+model_glmnet <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(alpha = c(0,0.1,1), lambda = c(0,0.5,1)),
+                      method = 'glmnet',metric = 'ROC', data = train_property)
+```
+
 
 Let's plot the results
 ```{r}
@@ -334,7 +339,7 @@ print(model_glmnet)
 Lambda = 0, alpha = 1 gives us the highest ROC. This means we don't need regularization, the model didn't overfit the data.
 
 ### Linear discriminant analysis
-```{r eval = F}
+```{r}
 model_lda <- train(formula_train, trControl = myControl, 
                       method = 'lda',metric = 'ROC', data = train_property)
 ```
@@ -359,11 +364,12 @@ print(model_qda)
 ### Random forest
 ```{r eval = F}
 model_ranger <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(mtry = c(2,4,10), splitrule = 'gini', min.node.size = 1),
-                      method = 'ranger',metric = 'ROC', data = train_property)
+                      method = 'ranger',metric = 'ROC', data = train_property,importance='impurity')
 ```
 
 Let's plot the results
 ```{r}
+varImp(model_ranger)
 plot(model_ranger)
 print(model_ranger)
 ```
@@ -389,6 +395,14 @@ results = resamples(model_all)
 summary(results)
 dotplot(results)
 
+```
+
+Logistic regression model wins, let's see how it performs on test set
+
+## Generalization
+```{r}
+roc_obj <- roc(test_property$Crime, predict(model_glmnet, test_property, type = 'prob')$Yes)
+auc(roc_obj)
 ```
 
 

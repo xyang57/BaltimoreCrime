@@ -8,7 +8,7 @@ Baltimore is one of the few cities in the United States that is famous for its h
 Although crimes could occur everywhere, it is common that criminals stick to their routines: they would generally commit a crime at similar times in their familiar locations. Given this common pattern, I will be able to use a data mining approach to predict the “hotspots” (locations and times) for different types of crimes in the near future. I also want to test whether crime occurrences are linked with environmental effects such as temperature, humidity, and precipitation events. If so, my predictions could be more accurate with the help of real-time weather data.
 
 ## Building models
-[Here is how I built the models](http://rpubs.com/xyang57/466521)
+[Here is how I built the models](http://rpubs.com/xyang57/470942)
 
 ## End product
 [Here is the web application](https://xuyangjhu.shinyapps.io/BaltimoreCrime/)
