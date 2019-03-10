@@ -2,14 +2,16 @@
 title: "Baltimore Crime Prediction"
 author: "Xu Yang"
 output:
+  pdf_document:
+    toc: yes
   html_document:
+    fig_caption: yes
     fig_height: 4
     fig_width: 8
-    theme: cosmo
     highlight: tango
-    number_sections: true
-    fig_caption: true
-    toc: true
+    number_sections: yes
+    theme: cosmo
+    toc: yes
 ---
 
 # Introduction
@@ -32,6 +34,7 @@ library(ranger)
 library(forcats)
 library(stringr)
 library(pROC)
+library(gbm)
 ```
 ## Load data
 ```{r, message = F, warning = F, results = 'hide'}
@@ -382,6 +385,7 @@ model_gbm <- train(formula_train, trControl = myControl, tuneGrid = expand.grid(
 
 Let's plot the results
 ```{r}
+varImp(model_gbm)
 plot(model_gbm)
 print(model_gbm)
 ```

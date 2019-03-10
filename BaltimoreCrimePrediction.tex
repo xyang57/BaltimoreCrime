@@ -1,0 +1,1106 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Baltimore Crime Prediction},
+            pdfauthor={Xu Yang},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Baltimore Crime Prediction}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Xu Yang}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Introduction}\label{introduction}
+
+Crimes are a common social problem affecting the quality of life and the
+economic growth of a city. Crime rate is an important factor that
+affects people's housing and traveling choices, for example: should I
+move to this new city or move away? What places should I avoid when I
+travel to a new place?
+
+Baltimore is one of the few cities in the United States that is famous
+for its high crime rates, ranking 7th among the 10 most dangerous cities
+in 2017 according to Forbes. It is certainly a place that needs more
+caution for new-coming people. But before they settle down in the city,
+what kind of information could be useful to them in deciding where they
+should avoid going, at what time. Thus I propose to use the crime
+database to predict crime occurrences in Baltimore. The results could
+not only help the decision-making process of common citizens, but could
+also be potentially utilized by the local police department to more
+efficiently allocate their limited resources.
+
+Although crimes could occur everywhere, it is common that criminals
+stick to their routines: they would generally commit a crime at similar
+times in their familiar locations. Given this common pattern, I will be
+able to use a data mining approach to predict the ``hotspots''
+(locations and times) for different types of crimes in the near future.
+I also want to test whether crime occurrences are linked with
+environmental effects such as temperature, humidity, and precipitation
+events. If so, my predictions could be more accurate with the help of
+real-time weather data.
+
+\section{Datasets}\label{datasets}
+
+I collected the data from various online databases, including: 1)
+Baltimore crime occurrence reports including crime time, crime data,
+crime type, neighborhood, district etc. 2012 to recent from the website
+of
+\href{https://www.baltimorepolice.org/crime-stats/open-data}{Baltimore
+Police Department}; 2) historical weather data scraped from \textbf{API}
+on \href{https://openweathermap.org/}{OpenWeatherMap}, including hourly
+temperature, humidity, precipitation, pressure, and weather events; and
+3) future weather data got from the same API to predict crime chance.
+
+\section{Load libraries and data}\label{load-libraries-and-data}
+
+\subsection{Load libraries}\label{load-libraries}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse) }
+\KeywordTok{library}\NormalTok{(lubridate)}
+\KeywordTok{library}\NormalTok{(caret)}
+\KeywordTok{library}\NormalTok{(ranger)}
+\KeywordTok{library}\NormalTok{(forcats)}
+\KeywordTok{library}\NormalTok{(stringr)}
+\KeywordTok{library}\NormalTok{(pROC)}
+\KeywordTok{library}\NormalTok{(gbm)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Load data}\label{load-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{'~/Google Drive/GithubProject/Shiny_Application/BPD_Part_1_Victim_Based_Crime_Data.csv'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{distinct}\NormalTok{() }\CommentTok{# get distinct rows of data with no duplicates}
+\NormalTok{weather <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{'~/Google Drive/GithubProject/Shiny_Application/Weather.csv'}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\section{General info}\label{general-info}
+
+\subsection{Weather Data}\label{weather-data}
+
+\begin{verbatim}
+## Dimensions: 51978 28
+\end{verbatim}
+
+\begin{verbatim}
+## Observations: 51,978
+## Variables: 28
+## $ dt                  <dbl> 1349096400, 1349186400, 1349190000, 134919...
+## $ dt_iso              <chr> "2012-10-01 13:00:00 +0000 UTC", "2012-10-...
+## $ city_id             <dbl> 4347778, 4347778, 4347778, 4347778, 434777...
+## $ city_name           <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ lat                 <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ lon                 <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ temp                <dbl> 285.43, 288.10, 290.51, 291.95, 293.01, 29...
+## $ temp_min            <dbl> 283.15, 285.37, 288.15, 290.15, 291.15, 29...
+## $ temp_max            <dbl> 290.15, 291.15, 293.15, 294.26, 294.26, 29...
+## $ pressure            <dbl> 1014, 1014, 1015, 1016, 1015, 1014, 1014, ...
+## $ sea_level           <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ grnd_level          <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ humidity            <dbl> 82, 72, 52, 55, 49, 43, 52, 45, 56, 59, 63...
+## $ wind_speed          <dbl> 0, 0, 0, 0, 0, 0, 1, 0, 2, 2, 1, 0, 0, 0, ...
+## $ wind_deg            <dbl> 0, 0, 0, 0, 0, 0, 230, 0, 150, 160, 170, 0...
+## $ rain_1h             <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ rain_3h             <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ rain_24h            <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ rain_today          <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ snow_1h             <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ snow_3h             <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ snow_24h            <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ snow_today          <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ clouds_all          <dbl> 75, 75, 40, 1, 1, 75, 1, 90, 90, 90, 90, 1...
+## $ weather_id          <dbl> 803, 803, 802, 800, 800, 803, 800, 804, 80...
+## $ weather_main        <chr> "Clouds", "Clouds", "Clouds", "Clear", "Cl...
+## $ weather_description <chr> "broken clouds", "broken clouds", "scatter...
+## $ weather_icon        <chr> "04d", "04d", "03d", "01d", "01d", "04d", ...
+\end{verbatim}
+
+\subsection{Crime Data}\label{crime-data}
+
+\begin{verbatim}
+## Dimensions: 329394 16
+\end{verbatim}
+
+\begin{verbatim}
+## Observations: 329,394
+## Variables: 16
+## $ CrimeDate         <chr> "12/08/2018", "12/08/2018", "12/08/2018", "1...
+## $ CrimeTime         <chr> "23:20:00", "23:00:00", "23:00:00", "22:50:0...
+## $ CrimeCode         <chr> "4E", "6D", "6D", "7A", "4E", "3AF", "4E", "...
+## $ Location          <chr> "100 S EUTAW ST", "900 S CATON AVE", "2600 H...
+## $ Description       <chr> "COMMON ASSAULT", "LARCENY FROM AUTO", "LARC...
+## $ `Inside/Outside`  <chr> "I", "O", "O", "O", "I", "O", "I", "O", "O",...
+## $ Weapon            <chr> NA, NA, NA, NA, NA, "FIREARM", NA, "KNIFE", ...
+## $ Post              <dbl> 113, 832, 232, 425, 842, 733, 612, 935, 211,...
+## $ District          <chr> "CENTRAL", "SOUTHWESTERN", "SOUTHEASTERN", "...
+## $ Neighborhood      <chr> "Downtown West", "Violetville", "Canton", "G...
+## $ Longitude         <dbl> -76.62083, -76.67137, -76.57891, -76.54639, ...
+## $ Latitude          <dbl> 39.28724, 39.27355, 39.28211, 39.34841, 39.2...
+## $ `Location 1`      <chr> "(39.287240000000, -76.620830000000)", "(39....
+## $ Premise           <chr> "HOTEL/MOTE", "PARKING LO", "STREET", "STREE...
+## $ crimeCaseNumber   <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ `Total Incidents` <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...
+\end{verbatim}
+
+\section{Data preprocessing}\label{data-preprocessing}
+
+\subsection{Crime Data}\label{crime-data-1}
+
+\subsubsection{Combine crime types}\label{combine-crime-types}
+
+There are 15 types of crime: COMMON ASSAULT, LARCENY FROM AUTO, AUTO
+THEFT, ROBBERY - STREET, AGG. ASSAULT, LARCENY, SHOOTING, ROBBERY -
+COMMERCIAL, BURGLARY, ROBBERY - RESIDENCE, ROBBERY - CARJACKING,
+HOMICIDE, ASSAULT BY THREAT, ARSON, RAPE.
+
+I combine all the crime into 6 different big categories based on
+\href{https://en.wikipedia.org/wiki/Crime}{wikipedia}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# define look up table for crime types, combine crime type into 6 big categories}
+\NormalTok{lut <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"COMMON ASSAULT"}\NormalTok{ =}\StringTok{ "ASSAULT"}\NormalTok{,}
+         \StringTok{"LARCENY FROM AUTO"}\NormalTok{ =}\StringTok{ "PROPERTY"}\NormalTok{,}
+         \StringTok{"AGG. ASSAULT"}\NormalTok{ =}\StringTok{ "ASSAULT"}\NormalTok{,}
+         \StringTok{"ROBBERY - STREET"}\NormalTok{ =}\StringTok{ "ROBBERY"}\NormalTok{,}
+         \StringTok{"LARCENY"}\NormalTok{ =}\StringTok{ "PROPERTY"}\NormalTok{,}
+         \StringTok{"ASSAULT BY THREAT"}\NormalTok{ =}\StringTok{ "ASSAULT"}\NormalTok{,}
+         \StringTok{"ROBBERY - CARJACKING"}\NormalTok{ =}\StringTok{ "ROBBERY"}\NormalTok{,}
+         \StringTok{"AUTO THEFT"}\NormalTok{ =}\StringTok{ "PROPERTY"}\NormalTok{,}
+         \StringTok{"SHOOTING"}\NormalTok{ =}\StringTok{ "SHOOTING"}\NormalTok{,}
+         \StringTok{"HOMICIDE"}\NormalTok{ =}\StringTok{ "HOMICIDE"}\NormalTok{,}
+         \StringTok{"BURGLARY"}\NormalTok{ =}\StringTok{ "PROPERTY"}\NormalTok{,}
+         \StringTok{"ROBBERY - COMMERCIAL"}\NormalTok{ =}\StringTok{ "ROBBERY"}\NormalTok{,}
+         \StringTok{"ROBBERY - RESIDENCE"}\NormalTok{ =}\StringTok{ "ROBBERY"}\NormalTok{,}
+         \StringTok{"RAPE"}\NormalTok{ =}\StringTok{ "RAPE"}\NormalTok{,}
+         \StringTok{"ARSON"}\NormalTok{ =}\StringTok{ "PROPERTY"}
+\NormalTok{)}
+\NormalTok{crime}\OperatorTok{$}\NormalTok{Type <-}\StringTok{ }\NormalTok{lut[crime}\OperatorTok{$}\NormalTok{Description]}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Collapse crime count to daily
+count}\label{collapse-crime-count-to-daily-count}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime <-}\StringTok{ }\NormalTok{crime }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(CrimeDate,  Neighborhood, Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{count =} \KeywordTok{n}\NormalTok{()) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Calculate Month, Year, Day of Month, Day of
+Week}\label{calculate-month-year-day-of-month-day-of-week}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_daily <-}\StringTok{ }\NormalTok{crime }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{CrimeDate =} \KeywordTok{mdy}\NormalTok{(CrimeDate), }\DataTypeTok{Month =} \KeywordTok{month}\NormalTok{(CrimeDate), }\DataTypeTok{Year =} \KeywordTok{year}\NormalTok{(CrimeDate),}
+         \DataTypeTok{Day =} \KeywordTok{day}\NormalTok{(CrimeDate),  }
+         \DataTypeTok{Weekday =} \KeywordTok{weekdays}\NormalTok{(CrimeDate, }\DataTypeTok{abbreviate=}\NormalTok{T), }\DataTypeTok{Week =} \KeywordTok{week}\NormalTok{(CrimeDate)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{Weekday =} \KeywordTok{factor}\NormalTok{(Weekday, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Mon"}\NormalTok{,}\StringTok{"Tue"}\NormalTok{,}\StringTok{"Wed"}\NormalTok{,}\StringTok{"Thu"}\NormalTok{,}\StringTok{"Fri"}\NormalTok{,}\StringTok{"Sat"}\NormalTok{,}\StringTok{"Sun"}\NormalTok{)))}
+\KeywordTok{names}\NormalTok{(crime_daily)[}\DecValTok{1}\NormalTok{]=}\StringTok{'Date'}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Weather Data}\label{weather-data-1}
+
+\subsubsection{spread categorical value of weather\_description to
+numeric
+value}\label{spread-categorical-value-of-weather_description-to-numeric-value}
+
+I select temp, temp\_min, temp\_max, pressure, humidity, wind\_speed,
+clouds\_all, and weather\_description from the weather dataset, perform
+time conversion (the timezone of weather dataset and crime dataset is
+not the same), and then spread weather\_description to numerical value
+in a wide format
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{weather <-}\StringTok{ }\NormalTok{weather }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{select}\NormalTok{(dt_iso,temp,temp_min,temp_max,pressure,humidity,wind_speed,clouds_all, weather_description) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{count =} \DecValTok{1}\NormalTok{, }\DataTypeTok{weather_description =} \KeywordTok{str_replace_all}\NormalTok{(weather_description,}\StringTok{' '}\NormalTok{,}\StringTok{'_'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{DateTime =} \KeywordTok{ymd_hms}\NormalTok{(dt_iso,}\DataTypeTok{tz =} \StringTok{"America/New_York"}\NormalTok{), }\DataTypeTok{Date =} \KeywordTok{date}\NormalTok{(DateTime)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{distinct}\NormalTok{(dt_iso,}\DataTypeTok{.keep_all =}\NormalTok{ T) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{spread}\NormalTok{(weather_description, count, }\DataTypeTok{fill =} \DecValTok{0}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{dt_iso)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{collapse hourly weather data to daily
+data}\label{collapse-hourly-weather-data-to-daily-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{weather_daily <-}\StringTok{ }\NormalTok{weather }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Date) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{temp =} \KeywordTok{mean}\NormalTok{(temp, }\DataTypeTok{na.rm =}\NormalTok{ T), }\DataTypeTok{temp_min =} \KeywordTok{min}\NormalTok{(temp_min,}\DataTypeTok{na.rm =}\NormalTok{ T), }\DataTypeTok{temp_max =} \KeywordTok{max}\NormalTok{(temp_max),}
+            \DataTypeTok{pressure =} \KeywordTok{mean}\NormalTok{(pressure, }\DataTypeTok{na.rm =}\NormalTok{ T), }\DataTypeTok{humidity =} \KeywordTok{mean}\NormalTok{(humidity, }\DataTypeTok{na.rm =}\NormalTok{ T), }\DataTypeTok{wind_speed =} \KeywordTok{max}\NormalTok{(wind_speed, }\DataTypeTok{na.rm  =}\NormalTok{ T),}
+            \DataTypeTok{clouds_all =} \KeywordTok{mean}\NormalTok{(clouds_all,}\DataTypeTok{na.rm=}\NormalTok{T),}\DataTypeTok{broken_clouds=}\KeywordTok{sum}\NormalTok{(broken_clouds),}\DataTypeTok{drizzle =} \KeywordTok{sum}\NormalTok{(drizzle),}
+            \DataTypeTok{few_clouds =} \KeywordTok{sum}\NormalTok{(few_clouds), }\DataTypeTok{fog=}\KeywordTok{sum}\NormalTok{(fog), }\DataTypeTok{freezing_rain =} \KeywordTok{sum}\NormalTok{(freezing_rain),}\DataTypeTok{haze=}\KeywordTok{sum}\NormalTok{(haze),}
+            \DataTypeTok{heavy_intensity_drizzle =} \KeywordTok{sum}\NormalTok{(heavy_intensity_drizzle),}\DataTypeTok{heavy_intensity_rain=}\KeywordTok{sum}\NormalTok{(heavy_intensity_rain),}
+            \DataTypeTok{heavy_intensity_shower_rain=}\KeywordTok{sum}\NormalTok{(heavy_intensity_shower_rain),}\DataTypeTok{heavy_snow=}\KeywordTok{sum}\NormalTok{(heavy_snow),}
+            \DataTypeTok{light_intensity_drizzle=}\KeywordTok{sum}\NormalTok{(light_intensity_drizzle),}\DataTypeTok{light_intensity_shower_rain=}\KeywordTok{sum}\NormalTok{(light_intensity_shower_rain),}
+            \DataTypeTok{light_rain=}\KeywordTok{sum}\NormalTok{(light_rain),}\DataTypeTok{light_rain_and_snow=}\KeywordTok{sum}\NormalTok{(light_rain_and_snow),}\DataTypeTok{light_shower_snow=}\KeywordTok{sum}\NormalTok{(light_shower_snow),}
+            \DataTypeTok{light_snow=}\KeywordTok{sum}\NormalTok{(light_snow),}\DataTypeTok{mist=}\KeywordTok{sum}\NormalTok{(mist),}\DataTypeTok{moderate_rain=}\KeywordTok{sum}\NormalTok{(moderate_rain),}\DataTypeTok{overcast_clouds=}\KeywordTok{sum}\NormalTok{(overcast_clouds),}
+            \DataTypeTok{proximity_shower_rain=}\KeywordTok{sum}\NormalTok{(proximity_shower_rain),}\DataTypeTok{proximity_thunderstorm=}\KeywordTok{sum}\NormalTok{(proximity_thunderstorm),}
+            \DataTypeTok{proximity_thunderstorm_with_rain=}\KeywordTok{sum}\NormalTok{(proximity_thunderstorm_with_rain),}\DataTypeTok{scattered_clouds=}\KeywordTok{sum}\NormalTok{(scattered_clouds),}
+            \DataTypeTok{shower_rain=}\KeywordTok{sum}\NormalTok{(shower_rain),}\DataTypeTok{shower_snow=}\KeywordTok{sum}\NormalTok{(shower_snow),}\DataTypeTok{sky_is_clear=}\KeywordTok{sum}\NormalTok{(sky_is_clear}\OperatorTok{+}\NormalTok{Sky_is_Clear),}
+            \DataTypeTok{smoke=}\KeywordTok{sum}\NormalTok{(smoke),}\DataTypeTok{snow=}\KeywordTok{sum}\NormalTok{(snow),}\DataTypeTok{SQUALLS=}\KeywordTok{sum}\NormalTok{(SQUALLS),}\DataTypeTok{thunderstorm=}\KeywordTok{sum}\NormalTok{(thunderstorm),}
+            \DataTypeTok{thunderstorm_with_heavy_rain=}\KeywordTok{sum}\NormalTok{(thunderstorm_with_heavy_rain),}\DataTypeTok{thunderstorm_with_light_drizzle=}\KeywordTok{sum}\NormalTok{(thunderstorm_with_light_drizzle),}
+            \DataTypeTok{thunderstorm_with_light_rain=}\KeywordTok{sum}\NormalTok{(thunderstorm_with_light_rain),}\DataTypeTok{thunderstorm_with_rain=}\KeywordTok{sum}\NormalTok{(thunderstorm_with_rain),}
+            \DataTypeTok{very_heavy_rain=}\KeywordTok{sum}\NormalTok{(very_heavy_rain))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Join crime data with weather
+data}\label{join-crime-data-with-weather-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{weather_crime_daily <-}\StringTok{ }\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(weather_daily) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(temp))}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Explanatory Data Analysis
+(EDA)}\label{explanatory-data-analysis-eda}
+
+\subsection{crime count versus month}\label{crime-count-versus-month}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Month, Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{count =} \KeywordTok{sum}\NormalTok{(count)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Month, }\DataTypeTok{y =}\NormalTok{ count, }\DataTypeTok{col =}\NormalTok{ Type)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(.}\OperatorTok{~}\NormalTok{Type, }\DataTypeTok{scales =} \StringTok{'free_y'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+We can see there's a general trend that crime count drops in February
+and increases during summer. This may be related to temperature change.
+But different crimes exhibit different patterns. We can definitely
+include month of year as a variable to predict crime
+
+\subsection{crime count versus day of
+month}\label{crime-count-versus-day-of-month}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Year,Month,Day, Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{count =} \KeywordTok{sum}\NormalTok{(count)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Day, Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{count =} \KeywordTok{mean}\NormalTok{(count)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Day, }\DataTypeTok{y =}\NormalTok{ count, }\DataTypeTok{color =}\NormalTok{ Type)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(.}\OperatorTok{~}\NormalTok{Type, }\DataTypeTok{scales =} \StringTok{'free_y'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+For assault and property, there's a dramatic increase of crime count on
+the first day of the month. It's very different for different crime
+types.
+
+\subsection{crime count versus day of the
+week}\label{crime-count-versus-day-of-the-week}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Weekday,Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{count =} \KeywordTok{sum}\NormalTok{(count)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Weekday, }\DataTypeTok{y =}\NormalTok{ count, }\DataTypeTok{col =}\NormalTok{ Type)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{group =}\NormalTok{ Type)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(.}\OperatorTok{~}\NormalTok{Type, }\DataTypeTok{scales =} \StringTok{'free_y'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{60}\NormalTok{, }\DataTypeTok{hjust =} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+Homicide, robbery, and rape show a similar decreasing pattern during the
+week, while assault peaks at weekend and property peaks at Friday and
+drops at weekend. Shooting first drops until Thursday and then increases
+again.
+
+\subsection{Crime count versus
+temperature}\label{crime-count-versus-temperature}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Date) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{count =} \KeywordTok{sum}\NormalTok{(count)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{inner_join}\NormalTok{(weather_daily) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ temp}\OperatorTok{-}\FloatTok{273.15}\NormalTok{, }\DataTypeTok{y =}\NormalTok{ count)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{'lm'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{'Air temperature (ºC)'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = "Date"
+\end{verbatim}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+There exists a linear positive relationship between crime count and air
+temperature, which is to be expected.
+
+\subsection{Crime count by
+neighborhood}\label{crime-count-by-neighborhood}
+
+Because there are a total of 279 neighborhoods, I'll only display the
+top 10
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Neighborhood) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{total_count =} \KeywordTok{sum}\NormalTok{(count)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(total_count)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(total_count }\OperatorTok{>}\StringTok{ }\DecValTok{3967}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{fct_reorder}\NormalTok{(Neighborhood, total_count), }\DataTypeTok{y =}\NormalTok{ total_count)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_flip}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{'Neighborhood'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+Not suprisingly downtown area is the most dangerous area.
+
+\section{More data preprocessing}\label{more-data-preprocessing}
+
+\subsection{Cluster Neighborhoods}\label{cluster-neighborhoods}
+
+Because there are a total of 279 neighborhoods in Baltimore, if we
+include all the neighborhoods in our model, the model would take forever
+to fit. Furthermore, the cluster could tell some info about
+neighborhoods similarity in Baltimore.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_by_neighborhood <-}\StringTok{ }\NormalTok{crime }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Neighborhood,Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{count =} \KeywordTok{n}\NormalTok{()) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{drop_na}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{spread}\NormalTok{(Type,count,}\DataTypeTok{fill =} \DecValTok{0}\NormalTok{) }\CommentTok{# format the table to wide format for clustering}
+\NormalTok{scaled =}\StringTok{ }\KeywordTok{scale}\NormalTok{(crime_by_neighborhood[,}\DecValTok{2}\OperatorTok{:}\DecValTok{7}\NormalTok{]) }\CommentTok{# scale the data before performing clustering}
+\NormalTok{wss =}\StringTok{ }\DecValTok{0} \CommentTok{# initialize within cluster sum of squared. We choose cluster number based on this.}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{20}\NormalTok{) \{}
+\NormalTok{  km.out =}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(scaled, }\DataTypeTok{centers =}\NormalTok{ i, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{, }\DataTypeTok{iter.max =} \DecValTok{50}\NormalTok{)}
+\NormalTok{  wss[i] =}\StringTok{ }\NormalTok{km.out}\OperatorTok{$}\NormalTok{tot.withinss}
+\NormalTok{\}}
+\KeywordTok{plot}\NormalTok{(wss)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+To me, 10 clusters should be enough.
+
+Do it again with 10 clusters in mind
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{km.out =}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(scaled, }\DataTypeTok{centers =} \DecValTok{10}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{, }\DataTypeTok{iter.max =} \DecValTok{50}\NormalTok{)}
+\NormalTok{crime_by_neighborhood}\OperatorTok{$}\NormalTok{cluster =}\StringTok{ }\NormalTok{km.out}\OperatorTok{$}\NormalTok{cluster}
+\NormalTok{neighborhood_cluster <-}\StringTok{ }\NormalTok{crime_by_neighborhood }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{select}\NormalTok{(Neighborhood,cluster) }
+\NormalTok{neighborhood_cluster}\OperatorTok{$}\NormalTok{cluster =}\StringTok{ }\KeywordTok{factor}\NormalTok{(neighborhood_cluster}\OperatorTok{$}\NormalTok{cluster)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Prepare the dataset}\label{prepare-the-dataset}
+
+Right now, the crime dataset only contains the neighborhood and date
+when crime happens. But most of the time, there's no crime happening for
+a certain neighborhood. We need to prepare the crime dataset to set
+count to 0 when no certain crime happens
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Neighborhood =}\StringTok{ }\KeywordTok{unique}\NormalTok{(crime_daily}\OperatorTok{$}\NormalTok{Neighborhood[}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(crime_daily}\OperatorTok{$}\NormalTok{Neighborhood)])}
+\NormalTok{Type =}\StringTok{ }\KeywordTok{unique}\NormalTok{(crime_daily}\OperatorTok{$}\NormalTok{Type)}
+\NormalTok{Date =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\KeywordTok{ymd}\NormalTok{(}\StringTok{'2012-01-01'}\NormalTok{),}\KeywordTok{ymd}\NormalTok{(}\StringTok{'2019-01-12'}\NormalTok{), }\DataTypeTok{by =} \StringTok{'1 day'}\NormalTok{)}
+\NormalTok{prepare <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{Date =}\NormalTok{ Date,}\DataTypeTok{Neighborhood =}\NormalTok{ Neighborhood,}\DataTypeTok{Type =}\NormalTok{ Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{Month =} \KeywordTok{month}\NormalTok{(Date), }\DataTypeTok{Year =} \KeywordTok{year}\NormalTok{(Date),}
+         \DataTypeTok{Day =} \KeywordTok{day}\NormalTok{(Date),  }
+         \DataTypeTok{Weekday =} \KeywordTok{weekdays}\NormalTok{(Date, }\DataTypeTok{abbreviate=}\NormalTok{T), }\DataTypeTok{Week =} \KeywordTok{week}\NormalTok{(Date)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{Weekday =} \KeywordTok{factor}\NormalTok{(Weekday, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Mon"}\NormalTok{,}\StringTok{"Tue"}\NormalTok{,}\StringTok{"Wed"}\NormalTok{,}\StringTok{"Thu"}\NormalTok{,}\StringTok{"Fri"}\NormalTok{,}\StringTok{"Sat"}\NormalTok{,}\StringTok{"Sun"}\NormalTok{)))}
+\NormalTok{crime_daily <-}\StringTok{ }\NormalTok{prepare }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(crime_daily)}
+\NormalTok{crime_daily}\OperatorTok{$}\NormalTok{count[}\KeywordTok{is.na}\NormalTok{(crime_daily}\OperatorTok{$}\NormalTok{count)] =}\StringTok{ }\DecValTok{0}
+\KeywordTok{table}\NormalTok{(crime_daily}\OperatorTok{$}\NormalTok{count)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##       0       1       2       3       4       5       6       7       8 
+## 4026377  209021   37560    8536    2434     752     253      93      34 
+##       9      10      11      12      15 
+##      20       3       5       3       1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{proportion =}\StringTok{ }\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{prop =} \KeywordTok{sum}\NormalTok{(count }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{)}\OperatorTok{/}\KeywordTok{n}\NormalTok{())}
+\NormalTok{proportion}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 2
+##   Type        prop
+##   <chr>      <dbl>
+## 1 ASSAULT  0.103  
+## 2 HOMICIDE 0.00267
+## 3 PROPERTY 0.209  
+## 4 RAPE     0.00293
+## 5 ROBBERY  0.0401 
+## 6 SHOOTING 0.00458
+\end{verbatim}
+
+Because the proporation the crime happens is around 20\% even for
+property crime, which has the highest occurances, I will turn this into
+a \textbf{classification} task
+
+\subsection{change crime to No or Yes based on
+count}\label{change-crime-to-no-or-yes-based-on-count}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crime_daily}\OperatorTok{$}\NormalTok{Crime =}\StringTok{ }\KeywordTok{if_else}\NormalTok{(crime_daily}\OperatorTok{$}\NormalTok{count }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\StringTok{'No'}\NormalTok{, }\StringTok{'Yes'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Join weather dataset and cluster info to crime
+dataset}\label{join-weather-dataset-and-cluster-info-to-crime-dataset}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{weather_crime_daily <-}\StringTok{ }\NormalTok{crime_daily }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(weather_daily) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(temp)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(neighborhood_cluster) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{Month =} \KeywordTok{factor}\NormalTok{(Month), }\DataTypeTok{Day =} \KeywordTok{factor}\NormalTok{(Day))}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Buliding models}\label{buliding-models}
+
+Because this is an \textbf{imbalanced dataset} with more 0s than 1s,
+I'll use \textbf{AUC} (area under the curve) as the metric to determine
+which model to use. AUC considers every possible threshold value for
+classification, and can give you a general idea that how your model
+performs. Other metrics to consider are precision, recall, and F index.
+Here we will focus only on AUC. I built different models for different
+types of crime, and for demonstration, I only included property crime,
+which is the most common crime here.
+
+\subsection{Identify near zero variance
+variables}\label{identify-near-zero-variance-variables}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{zero =}\StringTok{ }\KeywordTok{nearZeroVar}\NormalTok{(weather_crime_daily[,}\DecValTok{18}\OperatorTok{:}\DecValTok{52}\NormalTok{])}
+\NormalTok{zeroIndex =}\StringTok{ }\NormalTok{zero }\OperatorTok{+}\StringTok{ }\DecValTok{17}
+\NormalTok{weather_crime_daily =}\StringTok{ }\NormalTok{weather_crime_daily[,}\OperatorTok{-}\NormalTok{zeroIndex]}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Relevel crime factor so that Yes is treated as
+positive}\label{relevel-crime-factor-so-that-yes-is-treated-as-positive}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{weather_crime_daily}\OperatorTok{$}\NormalTok{Crime =}\StringTok{ }\KeywordTok{factor}\NormalTok{(weather_crime_daily}\OperatorTok{$}\NormalTok{Crime, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{'Yes'}\NormalTok{,}\StringTok{'No'}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Split to training set and test
+set}\label{split-to-training-set-and-test-set}
+
+For quick training and demonstration purpose, I only used 1 year of data
+to train the model, and most recent 3 months as test set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train_property <-}\StringTok{ }\NormalTok{weather_crime_daily }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(Date }\OperatorTok{<}\KeywordTok{ymd}\NormalTok{(}\DecValTok{20181001}\NormalTok{),Date }\OperatorTok{>=}\StringTok{ }\KeywordTok{ymd}\NormalTok{(}\DecValTok{20171001}\NormalTok{),Type }\OperatorTok{==}\StringTok{ 'PROPERTY'}\NormalTok{)}
+\NormalTok{test_property <-}\StringTok{ }\NormalTok{weather_crime_daily }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(Date }\OperatorTok{>=}\StringTok{ }\KeywordTok{ymd}\NormalTok{(}\DecValTok{20181001}\NormalTok{),Type }\OperatorTok{==}\StringTok{ 'PROPERTY'}\NormalTok{)}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{32}\NormalTok{)}
+\NormalTok{myFolds <-}\StringTok{ }\KeywordTok{createFolds}\NormalTok{(train_property}\OperatorTok{$}\NormalTok{Crime, }\DataTypeTok{k =} \DecValTok{3}\NormalTok{) }\CommentTok{# Three folds cross validation}
+\NormalTok{myControl =}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{summaryFunction =}\NormalTok{ twoClassSummary, }\DataTypeTok{classProbs =}\NormalTok{ T,}\DataTypeTok{verboseIter =}\NormalTok{ T,}
+                          \DataTypeTok{savePredictions =}\NormalTok{ T,}
+                          \DataTypeTok{index =}\NormalTok{ myFolds, }\DataTypeTok{trim =}\NormalTok{ T, }\DataTypeTok{returnData =}\NormalTok{ F}
+\NormalTok{                         )}
+\NormalTok{formula_train =}\StringTok{ }\KeywordTok{as.formula}\NormalTok{(}\StringTok{'as.factor(Crime)~ Month + Day + Weekday + temp + temp_min + temp_max + pressure + }
+\StringTok{                   humidity + wind_speed + clouds_all + broken_clouds + few_clouds + fog + haze +}
+\StringTok{                           heavy_intensity_rain + light_intensity_drizzle + light_rain + mist + moderate_rain+}
+\StringTok{                           overcast_clouds +  scattered_clouds + sky_is_clear + cluster'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Different models}\label{different-models}
+
+\subsubsection{Logistic regression with
+regularization}\label{logistic-regression-with-regularization}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_glmnet <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula_train, }\DataTypeTok{trControl =}\NormalTok{ myControl, }\DataTypeTok{tuneGrid =} \KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{alpha =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\DataTypeTok{lambda =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\DecValTok{1}\NormalTok{)),}
+                      \DataTypeTok{method =} \StringTok{'glmnet'}\NormalTok{,}\DataTypeTok{metric =} \StringTok{'ROC'}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ train_property)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## + Fold1: alpha=0.0, lambda=1 
+## - Fold1: alpha=0.0, lambda=1 
+## + Fold1: alpha=0.1, lambda=1 
+## - Fold1: alpha=0.1, lambda=1 
+## + Fold1: alpha=1.0, lambda=1 
+## - Fold1: alpha=1.0, lambda=1 
+## + Fold2: alpha=0.0, lambda=1 
+## - Fold2: alpha=0.0, lambda=1 
+## + Fold2: alpha=0.1, lambda=1 
+## - Fold2: alpha=0.1, lambda=1 
+## + Fold2: alpha=1.0, lambda=1 
+## - Fold2: alpha=1.0, lambda=1 
+## + Fold3: alpha=0.0, lambda=1 
+## - Fold3: alpha=0.0, lambda=1 
+## + Fold3: alpha=0.1, lambda=1 
+## - Fold3: alpha=0.1, lambda=1 
+## + Fold3: alpha=1.0, lambda=1 
+## - Fold3: alpha=1.0, lambda=1 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting alpha = 1, lambda = 0 on full training set
+## Final model footprint reduced by 71.6 Mb or 100%
+\end{verbatim}
+
+Let's plot the results
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(model_glmnet)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-26-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(model_glmnet)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## glmnet 
+## 
+## No pre-processing
+## Resampling: Bootstrapped (3 reps) 
+## Summary of sample sizes: 33823, 33824, 33823 
+## Resampling results across tuning parameters:
+## 
+##   alpha  lambda  ROC        Sens       Spec     
+##   0.0    0.0     0.7590607  0.1377164  0.9807128
+##   0.0    0.5     0.7154413  0.0000000  1.0000000
+##   0.0    1.0     0.7116081  0.0000000  1.0000000
+##   0.1    0.0     0.7595928  0.1655026  0.9745264
+##   0.1    0.5     0.5992414  0.0000000  1.0000000
+##   0.1    1.0     0.5000000  0.0000000  1.0000000
+##   1.0    0.0     0.7596763  0.1656797  0.9743000
+##   1.0    0.5     0.5000000  0.0000000  1.0000000
+##   1.0    1.0     0.5000000  0.0000000  1.0000000
+## 
+## ROC was used to select the optimal model using the largest value.
+## The final values used for the model were alpha = 1 and lambda = 0.
+\end{verbatim}
+
+Lambda = 0, alpha = 1 gives us the highest ROC. This means we don't need
+regularization, the model didn't overfit the data.
+
+\subsubsection{Linear discriminant
+analysis}\label{linear-discriminant-analysis}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_lda <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula_train, }\DataTypeTok{trControl =}\NormalTok{ myControl, }
+                      \DataTypeTok{method =} \StringTok{'lda'}\NormalTok{,}\DataTypeTok{metric =} \StringTok{'ROC'}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ train_property)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## + Fold1: parameter=none 
+## - Fold1: parameter=none 
+## + Fold2: parameter=none 
+## - Fold2: parameter=none 
+## + Fold3: parameter=none 
+## - Fold3: parameter=none 
+## Aggregating results
+## Fitting final model on full training set
+\end{verbatim}
+
+Let's look at the results
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(model_lda)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear Discriminant Analysis 
+## 
+## No pre-processing
+## Resampling: Bootstrapped (3 reps) 
+## Summary of sample sizes: 33823, 33824, 33823 
+## Resampling results:
+## 
+##   ROC        Sens       Spec     
+##   0.7590269  0.2943871  0.9368636
+\end{verbatim}
+
+\subsubsection{Quadratic discriminant
+analysis}\label{quadratic-discriminant-analysis}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_qda <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula_train, }\DataTypeTok{trControl =}\NormalTok{ myControl, }
+                      \DataTypeTok{method =} \StringTok{'qda'}\NormalTok{,}\DataTypeTok{metric =} \StringTok{'ROC'}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ train_property)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## + Fold1: parameter=none 
+## - Fold1: parameter=none 
+## + Fold2: parameter=none 
+## - Fold2: parameter=none 
+## + Fold3: parameter=none 
+## - Fold3: parameter=none 
+## Aggregating results
+## Fitting final model on full training set
+\end{verbatim}
+
+Let's look at the results
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(model_qda)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Quadratic Discriminant Analysis 
+## 
+## No pre-processing
+## Resampling: Bootstrapped (3 reps) 
+## Summary of sample sizes: 33823, 33824, 33823 
+## Resampling results:
+## 
+##   ROC        Sens       Spec     
+##   0.7437636  0.4307622  0.8690768
+\end{verbatim}
+
+\subsubsection{Random forest}\label{random-forest}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_ranger <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula_train, }\DataTypeTok{trControl =}\NormalTok{ myControl, }\DataTypeTok{tuneGrid =} \KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{mtry =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{10}\NormalTok{), }\DataTypeTok{splitrule =} \StringTok{'gini'}\NormalTok{, }\DataTypeTok{min.node.size =} \DecValTok{1}\NormalTok{),}
+                      \DataTypeTok{method =} \StringTok{'ranger'}\NormalTok{,}\DataTypeTok{metric =} \StringTok{'ROC'}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ train_property,}\DataTypeTok{importance=}\StringTok{'impurity'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Let's plot the results
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{varImp}\NormalTok{(model_ranger)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ranger variable importance
+## 
+##   only 20 most important variables shown (out of 75)
+## 
+##                  Overall
+## cluster7         100.000
+## cluster9          74.411
+## cluster10         28.095
+## cluster4          27.958
+## cluster6          27.500
+## cluster3          16.724
+## cluster2           5.803
+## cluster8           4.511
+## temp               3.902
+## humidity           3.456
+## temp_max           3.416
+## temp_min           3.359
+## pressure           3.356
+## clouds_all         3.189
+## sky_is_clear       2.395
+## wind_speed         2.306
+## broken_clouds      2.051
+## mist               2.013
+## scattered_clouds   1.976
+## overcast_clouds    1.911
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(model_ranger)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-32-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(model_ranger)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Random Forest 
+## 
+## No pre-processing
+## Resampling: Bootstrapped (3 reps) 
+## Summary of sample sizes: 33823, 33824, 33823 
+## Resampling results across tuning parameters:
+## 
+##   mtry  ROC        Sens          Spec     
+##    2    0.7268018  5.061241e-05  0.9999939
+##    4    0.7137099  7.655127e-02  0.9872112
+##   10    0.7007627  1.628960e-01  0.9582803
+## 
+## Tuning parameter 'splitrule' was held constant at a value of gini
+## 
+## Tuning parameter 'min.node.size' was held constant at a value of 1
+## ROC was used to select the optimal model using the largest value.
+## The final values used for the model were mtry = 2, splitrule = gini
+##  and min.node.size = 1.
+\end{verbatim}
+
+\subsubsection{Gradient boosting}\label{gradient-boosting}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_gbm <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula_train, }\DataTypeTok{trControl =}\NormalTok{ myControl, }\DataTypeTok{tuneGrid =} \KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{shrinkage =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.01}\NormalTok{,}\FloatTok{0.1}\NormalTok{,}\FloatTok{0.2}\NormalTok{), }\DataTypeTok{interaction.depth =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{4}\NormalTok{), }\DataTypeTok{n.minobsinnode =} \DecValTok{10}\NormalTok{, }\DataTypeTok{n.trees =} \DecValTok{1000}\NormalTok{),}
+                      \DataTypeTok{method =} \StringTok{'gbm'}\NormalTok{,}\DataTypeTok{metric =} \StringTok{'ROC'}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ train_property)}
+\end{Highlighting}
+\end{Shaded}
+
+Let's plot the results
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{varImp}\NormalTok{(model_gbm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## gbm variable importance
+## 
+##   only 20 most important variables shown (out of 75)
+## 
+##                Overall
+## cluster8      100.0000
+## cluster10      47.0639
+## cluster3       46.5467
+## cluster5       23.2885
+## cluster4       20.6189
+## cluster6       17.7766
+## cluster2       16.1516
+## cluster7        9.7990
+## cluster9        7.9888
+## temp            3.0465
+## pressure        2.7730
+## humidity        2.5948
+## clouds_all      2.3865
+## temp_max        1.7916
+## Month10         1.3736
+## WeekdaySun      1.3425
+## WeekdaySat      1.1367
+## Month3          1.1016
+## broken_clouds   1.0808
+## temp_min        0.9621
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(model_gbm)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-34-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(model_gbm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Stochastic Gradient Boosting 
+## 
+## No pre-processing
+## Resampling: Bootstrapped (3 reps) 
+## Summary of sample sizes: 33823, 33824, 33823 
+## Resampling results across tuning parameters:
+## 
+##   interaction.depth  ROC        Sens       Spec     
+##   1                  0.7517245  0.1595050  0.9748446
+##   2                  0.7488788  0.1788136  0.9680708
+##   4                  0.7444652  0.1852414  0.9635916
+## 
+## Tuning parameter 'n.trees' was held constant at a value of 1000
+## 
+## Tuning parameter 'shrinkage' was held constant at a value of 0.1
+## 
+## Tuning parameter 'n.minobsinnode' was held constant at a value of 10
+## ROC was used to select the optimal model using the largest value.
+## The final values used for the model were n.trees = 1000,
+##  interaction.depth = 1, shrinkage = 0.1 and n.minobsinnode = 10.
+\end{verbatim}
+
+\subsection{Compare all the models}\label{compare-all-the-models}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_all =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{glmnet =}\NormalTok{ model_glmnet, }\DataTypeTok{lda =}\NormalTok{ model_lda, }\DataTypeTok{qda =}\NormalTok{ model_qda, }\DataTypeTok{ranger =}\NormalTok{ model_ranger,}
+                 \DataTypeTok{gbm =}\NormalTok{ model_gbm)}
+\NormalTok{results =}\StringTok{ }\KeywordTok{resamples}\NormalTok{(model_all)}
+\KeywordTok{summary}\NormalTok{(results)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.resamples(object = results)
+## 
+## Models: glmnet, lda, qda, ranger, gbm 
+## Number of resamples: 3 
+## 
+## ROC 
+##             Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## glmnet 0.7582697 0.7588491 0.7594285 0.7596763 0.7603797 0.7613308    0
+## lda    0.7575681 0.7582330 0.7588980 0.7590269 0.7597564 0.7606148    0
+## qda    0.7432933 0.7436039 0.7439145 0.7437636 0.7439987 0.7440830    0
+## ranger 0.7243869 0.7254977 0.7266084 0.7268018 0.7280092 0.7294101    0
+## gbm    0.7496629 0.7507765 0.7518900 0.7517245 0.7527553 0.7536206    0
+## 
+## Sens 
+##             Min.   1st Qu.    Median         Mean      3rd Qu.
+## glmnet 0.1559368 0.1588217 0.1617067 1.656797e-01 1.705512e-01
+## lda    0.2935014 0.2935393 0.2935773 2.943871e-01 2.948299e-01
+## qda    0.4271940 0.4279912 0.4287883 4.307622e-01 4.325463e-01
+## ranger 0.0000000 0.0000000 0.0000000 5.061241e-05 7.591862e-05
+## gbm    0.1535074 0.1547981 0.1560887 1.595050e-01 1.625038e-01
+##                Max. NA's
+## glmnet 0.1793956878    0
+## lda    0.2960825995    0
+## qda    0.4363042818    0
+## ranger 0.0001518372    0
+## gbm    0.1689189189    0
+## 
+## Spec 
+##             Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## glmnet 0.9722809 0.9737584 0.9752359 0.9743000 0.9753095 0.9753832    0
+## lda    0.9358054 0.9365030 0.9372006 0.9368636 0.9373927 0.9375849    0
+## qda    0.8667646 0.8678556 0.8689467 0.8690768 0.8702328 0.8715190    0
+## ranger 0.9999816 0.9999908 1.0000000 0.9999939 1.0000000 1.0000000    0
+## gbm    0.9727214 0.9740429 0.9753644 0.9748446 0.9759062 0.9764479    0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{dotplot}\NormalTok{(results)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BaltimoreCrimePrediction_files/figure-latex/unnamed-chunk-35-1.pdf}
+
+Logistic regression model wins, let's see how it performs on test set
+
+\subsection{Generalization}\label{generalization}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{roc_obj <-}\StringTok{ }\KeywordTok{roc}\NormalTok{(test_property}\OperatorTok{$}\NormalTok{Crime, }\KeywordTok{predict}\NormalTok{(model_glmnet, test_property, }\DataTypeTok{type =} \StringTok{'prob'}\NormalTok{)}\OperatorTok{$}\NormalTok{Yes)}
+\KeywordTok{auc}\NormalTok{(roc_obj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Area under the curve: 0.7619
+\end{verbatim}
+
+\section{Conclusion}\label{conclusion}
+
+Logistic regression has the highest AUC, while random forest trained
+using `ranger' package has the lowest AUC. This means the relationship
+between the log(odds) and our predictor variables are linearly related
+rather than have very complex interactions. However, if we choose
+different metric such as sensitivity, qda would give us the highest
+accuracy. However, the specificity, which is the true negative rate, is
+also the lowest using qda. This means we classify more false positives.
+It all depends on what your \textbf{goal} is and you have to
+\textbf{comporise} between sensitivity and specificity.
+
+Besides property crime, I also built separate models for other five
+types of crime. Building models is not the end of my project. For better
+\textbf{visualization}, I deployed a shiny web application where people
+can check future four days of every type of crime probability at every
+neighborhood in Baltimore based on real-time weather forecast.
+\href{https://xuyangjhu.shinyapps.io/BaltimoreCrime/}{Please check it
+out}
+
+
+\end{document}
